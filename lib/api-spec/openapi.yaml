@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: CareerCompass AI API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: career
+    description: Career analysis and guidance
+  - name: chat
+    description: AI chat assistant
+  - name: reports
+    description: Saved career reports
 paths:
   /healthz:
     get:
@@ -24,6 +30,222 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /career/analyze:
+    post:
+      operationId: analyzeCareer
+      tags: [career]
+      summary: Analyze career options for a user
+      description: Takes user profile data and returns AI-generated career guidance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfile"
+      responses:
+        "200":
+          description: Career analysis result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CareerAnalysis"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /career/compare:
+    post:
+      operationId: compareCareers
+      tags: [career]
+      summary: Compare two or more career paths
+      description: Returns a detailed comparison of career options
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CareerCompareInput"
+      responses:
+        "200":
+          description: Career comparison result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CareerComparison"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /career/skill-gap:
+    post:
+      operationId: analyzeSkillGap
+      tags: [career]
+      summary: Analyze skill gaps for a target career
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SkillGapInput"
+      responses:
+        "200":
+          description: Skill gap analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SkillGapResult"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /career/ai-future:
+    post:
+      operationId: analyzeAiFuture
+      tags: [career]
+      summary: Analyze what careers fit if AI replaces certain jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiFutureInput"
+      responses:
+        "200":
+          description: AI future career analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiFutureResult"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /chat/message:
+    post:
+      operationId: sendChatMessage
+      tags: [chat]
+      summary: Send a message to the AI career assistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatInput"
+      responses:
+        "200":
+          description: AI chat response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /reports:
+    get:
+      operationId: listReports
+      tags: [reports]
+      summary: List saved career reports
+      responses:
+        "200":
+          description: List of reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReportSummary"
+    post:
+      operationId: saveReport
+      tags: [reports]
+      summary: Save a career analysis report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportInput"
+      responses:
+        "201":
+          description: Report saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /reports/{id}:
+    get:
+      operationId: getReport
+      tags: [reports]
+      summary: Get a saved career report by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Report detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+        "404":
+          description: Report not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    delete:
+      operationId: deleteReport
+      tags: [reports]
+      summary: Delete a saved career report
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Report deleted
+        "404":
+          description: Report not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +256,462 @@ components:
       required:
         - status
 
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    UserProfile:
+      type: object
+      required:
+        - age
+        - country
+        - schoolLevel
+      properties:
+        age:
+          type: integer
+          description: Age of the user (13-30)
+        country:
+          type: string
+          description: Country of residence
+        budget:
+          type: string
+          description: "Budget for education: low/medium/high or specific amount"
+        schoolLevel:
+          type: string
+          description: "Current school level: middle/high/college/graduate/working"
+        grades:
+          type: string
+          description: "Grade performance: poor/average/good/excellent"
+        interests:
+          type: array
+          items:
+            type: string
+          description: List of interest tags
+        personality:
+          type: string
+          description: "Personality type or description"
+        careerGoals:
+          type: string
+          description: Free-text career goals
+        workType:
+          type: string
+          description: "creative/technical/business/mixed"
+        workMode:
+          type: string
+          description: "freelance/job/business/undecided"
+        canAffordCollege:
+          type: boolean
+          description: Whether the user can afford college
+        preferredCountries:
+          type: array
+          items:
+            type: string
+          description: Countries to study or work in
+        hobbies:
+          type: array
+          items:
+            type: string
+          description: List of hobbies
+        strengths:
+          type: array
+          items:
+            type: string
+          description: Self-identified strengths
+        weaknesses:
+          type: array
+          items:
+            type: string
+          description: Self-identified weaknesses
+        dreamLifestyle:
+          type: string
+          description: Description of ideal lifestyle
+        wantsRemote:
+          type: boolean
+          description: Whether the user wants remote work
+
+    CareerMatch:
+      type: object
+      required:
+        - title
+        - fitScore
+        - why
+        - salaryRange
+        - aiRisk
+        - demandOutlook
+      properties:
+        title:
+          type: string
+        fitScore:
+          type: integer
+          description: 0-100 fit score
+        why:
+          type: string
+          description: Personalized explanation of why this career fits
+        salaryRange:
+          type: object
+          required: [min, max, currency, country]
+          properties:
+            min:
+              type: integer
+            max:
+              type: integer
+            currency:
+              type: string
+            country:
+              type: string
+        aiRisk:
+          type: string
+          description: "low/medium/high"
+        aiRiskPercent:
+          type: integer
+          description: 0-100 estimated automation risk
+        demandOutlook:
+          type: string
+          description: "declining/stable/growing/booming"
+        topDegrees:
+          type: array
+          items:
+            type: string
+        alternativePaths:
+          type: array
+          items:
+            type: string
+          description: Paths without a degree
+
+    Roadmap:
+      type: object
+      required: [oneMonth, sixMonths, oneYear, threeYears]
+      properties:
+        oneMonth:
+          type: array
+          items:
+            type: string
+        sixMonths:
+          type: array
+          items:
+            type: string
+        oneYear:
+          type: array
+          items:
+            type: string
+        threeYears:
+          type: array
+          items:
+            type: string
+
+    LearningResource:
+      type: object
+      required: [name, type, url, cost]
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          description: "course/book/youtube/community/tool"
+        url:
+          type: string
+        cost:
+          type: string
+          description: "free/paid"
+        description:
+          type: string
+
+    CollegeRecommendation:
+      type: object
+      required: [name, country, program, tuitionRange]
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        program:
+          type: string
+        tuitionRange:
+          type: string
+        scholarshipAvailable:
+          type: boolean
+        entryRequirements:
+          type: string
+
+    ScholarshipInfo:
+      type: object
+      required: [name, provider, amount]
+      properties:
+        name:
+          type: string
+        provider:
+          type: string
+        amount:
+          type: string
+        eligibility:
+          type: string
+        deadline:
+          type: string
+        url:
+          type: string
+
+    SkillTree:
+      type: object
+      required: [career, foundational, intermediate, advanced]
+      properties:
+        career:
+          type: string
+        foundational:
+          type: array
+          items:
+            type: string
+        intermediate:
+          type: array
+          items:
+            type: string
+        advanced:
+          type: array
+          items:
+            type: string
+
+    CareerAnalysis:
+      type: object
+      required:
+        - careers
+        - roadmap
+        - weeklyActions
+        - freeResources
+        - paidResources
+        - sideHustleIdeas
+        - portfolioTips
+        - networkingAdvice
+        - internshipAdvice
+      properties:
+        careers:
+          type: array
+          items:
+            $ref: "#/components/schemas/CareerMatch"
+        roadmap:
+          $ref: "#/components/schemas/Roadmap"
+        weeklyActions:
+          type: array
+          items:
+            type: string
+          description: Actionable steps for this week
+        freeResources:
+          type: array
+          items:
+            $ref: "#/components/schemas/LearningResource"
+        paidResources:
+          type: array
+          items:
+            $ref: "#/components/schemas/LearningResource"
+        colleges:
+          type: array
+          items:
+            $ref: "#/components/schemas/CollegeRecommendation"
+        scholarships:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScholarshipInfo"
+        skillTrees:
+          type: array
+          items:
+            $ref: "#/components/schemas/SkillTree"
+        beginnerProjects:
+          type: array
+          items:
+            type: string
+        sideHustleIdeas:
+          type: array
+          items:
+            type: string
+        portfolioTips:
+          type: array
+          items:
+            type: string
+        networkingAdvice:
+          type: array
+          items:
+            type: string
+        internshipAdvice:
+          type: array
+          items:
+            type: string
+        personalizedSummary:
+          type: string
+          description: A short AI-written paragraph summarizing the analysis
+
+    CareerCompareInput:
+      type: object
+      required: [careers, userCountry]
+      properties:
+        careers:
+          type: array
+          items:
+            type: string
+          minItems: 2
+        userCountry:
+          type: string
+        userAge:
+          type: ["integer", "null"]
+        userBudget:
+          type: ["string", "null"]
+
+    CareerComparison:
+      type: object
+      required: [careers, summary]
+      properties:
+        careers:
+          type: array
+          items:
+            type: object
+            required: [title, salaryRange, aiRisk, growthRate, timeToFirstJob, difficulty, pros, cons]
+            properties:
+              title:
+                type: string
+              salaryRange:
+                type: string
+              aiRisk:
+                type: string
+              growthRate:
+                type: string
+              timeToFirstJob:
+                type: string
+              difficulty:
+                type: string
+              pros:
+                type: array
+                items:
+                  type: string
+              cons:
+                type: array
+                items:
+                  type: string
+        summary:
+          type: string
+          description: AI recommendation on which to choose and why
+
+    SkillGapInput:
+      type: object
+      required: [targetCareer, currentSkills]
+      properties:
+        targetCareer:
+          type: string
+        currentSkills:
+          type: array
+          items:
+            type: string
+        userCountry:
+          type: string
+
+    SkillGapResult:
+      type: object
+      required: [targetCareer, missingSkills, learningPath, estimatedTimeMonths]
+      properties:
+        targetCareer:
+          type: string
+        missingSkills:
+          type: array
+          items:
+            type: object
+            required: [skill, priority, resources]
+            properties:
+              skill:
+                type: string
+              priority:
+                type: string
+                description: "critical/important/nice-to-have"
+              resources:
+                type: array
+                items:
+                  type: string
+        learningPath:
+          type: array
+          items:
+            type: string
+        estimatedTimeMonths:
+          type: integer
+
+    AiFutureInput:
+      type: object
+      required: [currentOrPlannedJob, userProfile]
+      properties:
+        currentOrPlannedJob:
+          type: string
+        userProfile:
+          $ref: "#/components/schemas/UserProfile"
+
+    AiFutureResult:
+      type: object
+      required: [automationRisk, alternativeCareers, futureProofSkills, summary]
+      properties:
+        automationRisk:
+          type: integer
+          description: 0-100 estimated risk for the given job
+        alternativeCareers:
+          type: array
+          items:
+            $ref: "#/components/schemas/CareerMatch"
+        futureProofSkills:
+          type: array
+          items:
+            type: string
+        summary:
+          type: string
+
+    ChatInput:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+        context:
+          type: ["string", "null"]
+          description: Optional context from the user's career analysis
+
+    ChatResponse:
+      type: object
+      required: [reply]
+      properties:
+        reply:
+          type: string
+
+    ReportSummary:
+      type: object
+      required: [id, name, createdAt, topCareer]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+        topCareer:
+          type: string
+
+    ReportInput:
+      type: object
+      required: [name, profile, analysis]
+      properties:
+        name:
+          type: string
+          description: Report label / user name
+        profile:
+          $ref: "#/components/schemas/UserProfile"
+        analysis:
+          $ref: "#/components/schemas/CareerAnalysis"
+
+    Report:
+      type: object
+      required: [id, name, createdAt, profile, analysis]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+        profile:
+          $ref: "#/components/schemas/UserProfile"
+        analysis:
+          $ref: "#/components/schemas/CareerAnalysis"
