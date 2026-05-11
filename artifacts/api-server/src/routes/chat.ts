@@ -29,7 +29,7 @@ ${context ? `\nContext about this user from their career analysis: ${context}` :
     const reply = await callGroq(message, systemPrompt);
     res.json({ reply });
   } catch (err) {
-    req.log.error({ err }, "Chat message failed");
+    console.error({ err }, "Chat message failed");
     res.status(500).json({ error: "Failed to get AI response. Please try again." });
   }
 });

@@ -163,7 +163,7 @@ Provide 3-5 career matches, ordered by fit score descending. Make everything spe
     const analysis = await callGroqJson<Record<string, unknown>>(prompt, systemPrompt);
     res.json(analysis);
   } catch (err) {
-    req.log.error({ err }, "Career analysis failed");
+    console.error({ err }, "Career analysis failed");
     res.status(500).json({ error: "Failed to generate career analysis. Please try again." });
   }
 });
@@ -203,7 +203,7 @@ Return JSON:
     const comparison = await callGroqJson<Record<string, unknown>>(prompt, systemPrompt);
     res.json(comparison);
   } catch (err) {
-    req.log.error({ err }, "Career comparison failed");
+    console.error({ err }, "Career comparison failed");
     res.status(500).json({ error: "Failed to generate career comparison." });
   }
 });
@@ -245,7 +245,7 @@ Return JSON:
     const result = await callGroqJson<Record<string, unknown>>(prompt, systemPrompt);
     res.json(result);
   } catch (err) {
-    req.log.error({ err }, "Skill gap analysis failed");
+    console.error({ err }, "Skill gap analysis failed");
     res.status(500).json({ error: "Failed to analyze skill gap." });
   }
 });
@@ -293,7 +293,7 @@ Return JSON:
     const result = await callGroqJson<Record<string, unknown>>(prompt, systemPrompt);
     res.json(result);
   } catch (err) {
-    req.log.error({ err }, "AI future analysis failed");
+    console.error({ err }, "AI future analysis failed");
     res.status(500).json({ error: "Failed to analyze AI future." });
   }
 });

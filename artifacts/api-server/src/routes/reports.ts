@@ -32,7 +32,7 @@ router.get("/", async (req, res) => {
 
     res.json(summaries);
   } catch (err) {
-    req.log.error({ err }, "Failed to list reports");
+    console.error({ err }, "Failed to list reports");
     res.status(500).json({ error: "Failed to retrieve reports." });
   }
 });
@@ -63,7 +63,7 @@ router.post("/", async (req, res) => {
       analysis: report.analysis,
     });
   } catch (err) {
-    req.log.error({ err }, "Failed to save report");
+    console.error({ err }, "Failed to save report");
     res.status(500).json({ error: "Failed to save report." });
   }
 });
@@ -96,7 +96,7 @@ router.get("/:id", async (req, res) => {
       analysis: report.analysis,
     });
   } catch (err) {
-    req.log.error({ err }, "Failed to get report");
+    console.error({ err }, "Failed to get report");
     res.status(500).json({ error: "Failed to retrieve report." });
   }
 });
@@ -122,7 +122,7 @@ router.delete("/:id", async (req, res) => {
 
     res.status(204).send();
   } catch (err) {
-    req.log.error({ err }, "Failed to delete report");
+    console.error({ err }, "Failed to delete report");
     res.status(500).json({ error: "Failed to delete report." });
   }
 });
